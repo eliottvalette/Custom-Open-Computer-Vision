@@ -6,6 +6,7 @@ runs
 output_images
 Curl-Biceps.v1i.yolov8
 Curl-Biceps.v2i.yolov8
+Curl-Biceps.v3i.yolov8
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
