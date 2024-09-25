@@ -5,9 +5,6 @@ mkdocs.yml
 runs
 output_images
 output_test
-Curl-Biceps.v1i.yolov8
-Curl-Biceps.v2i.yolov8
-Curl-Biceps.v3i.yolov8
 app.py
 flops.py
 tests
