@@ -8,7 +8,6 @@ model = YOLO('weights/yolov8n-pose.pt')
 # Open the webcam
 cap = cv2.VideoCapture(0)
 
-
 # Keypoint names
 keypoint_names = [
     'Nose', 'Left Eye', 'Right Eye', 'Left Ear', 'Right Ear',
@@ -19,6 +18,11 @@ keypoint_names = [
 right_arm_names = ['Right Shoulder', 'Right Elbow', 'Right Wrist']
 left_arm_names = ['Left Shoulder', 'Left Elbow', 'Left Wrist']
 
+# Initialize counters and state variables
+curl_right_counts = 0
+curl_left_counts = 0
+right_arm_bent = False
+left_arm_bent = False
 
 def calculate_angle(point1, point2, point3):
     vector1 = (point1[0] - point2[0], point1[1] - point2[1])
@@ -53,6 +57,8 @@ def display_progress_bar(frame, top_left, length, shoulder_point, elbow_point, h
     # Display percentage text
     cv2.putText(frame, f"{percentage:.1f}%", (top_left[0], top_left[1] - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+    
+    return angle
 
 while True:
     ret, frame = cap.read()
@@ -63,9 +69,6 @@ while True:
     
     # Predict pose keypoints
     results = model(frame)
-
-    left_arm_detected_objects = 0
-    right_arm_detected_objects = 0
     
     for result in results:
         keypoints_xy = result.keypoints.xy[0]
@@ -75,9 +78,9 @@ while True:
         annotated_frame = result.plot()
 
         is_right_arm_detected, is_left_arm_detected = detect_arms(keypoints_xy)
-    
-    # Calculate angle and map it to percentage
-    if is_right_arm_detected :
+
+    # Check and count for right arm curls
+    if is_right_arm_detected:
         hand_point = keypoints_xy[10]
         elbow_point = keypoints_xy[8]
         shoulder_point = keypoints_xy[6]
@@ -85,10 +88,21 @@ while True:
         bar_top_left = (50, 50)
         bar_length = 200
 
-        # Display the progress bar
-        display_progress_bar(annotated_frame, bar_top_left, bar_length, shoulder_point, elbow_point, hand_point, color=(0, 255, 0))
-        
-    if is_left_arm_detected :
+        # Display the progress bar and get the angle
+        angle = display_progress_bar(annotated_frame, bar_top_left, bar_length, shoulder_point, elbow_point, hand_point, color=(0, 255, 0))
+
+        # Check for arm curl logic
+        if angle < 45:  # Arm is fully bent
+            if not right_arm_bent:
+                right_arm_bent = True
+        elif angle > 160:  # Arm is fully extended
+            if right_arm_bent:
+                right_arm_bent = False
+                curl_right_counts += 1  # Count one curl
+                print(f"Right Arm Curl Count: {curl_right_counts}")
+
+    # Check and count for left arm curls
+    if is_left_arm_detected:
         hand_point = keypoints_xy[9]
         elbow_point = keypoints_xy[7]
         shoulder_point = keypoints_xy[5]
@@ -96,10 +110,24 @@ while True:
         bar_length = 200  
         bar_top_left = (50, 150)
 
-        # Display the progress bar
-        display_progress_bar(annotated_frame, bar_top_left, bar_length, shoulder_point, elbow_point, hand_point, color=(255, 0, 0))
+        # Display the progress bar and get the angle
+        angle = display_progress_bar(annotated_frame, bar_top_left, bar_length, shoulder_point, elbow_point, hand_point, color=(255, 0, 0))
 
-    
+        # Check for arm curl logic
+        if angle < 45:  # Arm is fully bent
+            if not left_arm_bent:
+                left_arm_bent = True
+        elif angle > 160:  # Arm is fully extended
+            if left_arm_bent:
+                left_arm_bent = False
+                curl_left_counts += 1  # Count one curl
+                print(f"Left Arm Curl Count: {curl_left_counts}")
+
+    # Display the count on the frame
+    cv2.putText(annotated_frame, f"Right Arm Curls: {curl_right_counts}", (10, 300), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.putText(annotated_frame, f"Left Arm Curls: {curl_left_counts}", (10, 350), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
 
     # Display the annotated frame
     cv2.imshow("Pose Estimation", annotated_frame)
@@ -111,4 +139,3 @@ while True:
 # Release the resources
 cap.release()
 cv2.destroyAllWindows()
-
