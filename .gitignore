@@ -4,9 +4,13 @@ tests
 mkdocs.yml
 runs
 output_images
+output_test
 Curl-Biceps.v1i.yolov8
 Curl-Biceps.v2i.yolov8
 Curl-Biceps.v3i.yolov8
+app.py
+flops.py
+tests
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -149,14 +153,11 @@ dmypy.json
 
 # datasets and projects
 datasets/
-runs/
 wandb/
 tests/
 .DS_Store
 
 # Neural Network weights -----------------------------------------------------------------------------------------------
-weights/
-*.weights
 *.pt
 *.pb
 *.onnx

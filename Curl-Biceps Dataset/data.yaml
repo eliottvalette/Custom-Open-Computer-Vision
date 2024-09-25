@@ -1,0 +1,6 @@
+train: /Users/eliottvalette/Documents/YOLO/yolov10/Curl-Biceps.v3i.yolov8/train/images
+val: /Users/eliottvalette/Documents/YOLO/yolov10/Curl-Biceps.v3i.yolov8/valid/images
+test: /Users/eliottvalette/Documents/YOLO/yolov10/Curl-Biceps.v3i.yolov8/test/images
+
+nc: 3
+names: ['elbow', 'hand', 'shoulder']

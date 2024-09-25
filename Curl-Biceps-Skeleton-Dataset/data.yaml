@@ -1,0 +1,16 @@
+train: /Users/eliottvalette/Documents/YOLO/yolov10/Curl-Biceps-Skeleton-Dataset/train/images
+val: /Users/eliottvalette/Documents/YOLO/yolov10/Curl-Biceps-Skeleton-Dataset/valid/images
+test: /Users/eliottvalette/Documents/YOLO/yolov10/Curl-Biceps-Skeleton-Dataset/test/images
+
+kpt_shape: [3, 3]
+flip_idx: [0, 1, 2]
+
+nc: 1
+names: ['arm']
+
+roboflow:
+  workspace: curlbiceps
+  project: curl-biceps-skeleton
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/curlbiceps/curl-biceps-skeleton/dataset/1
